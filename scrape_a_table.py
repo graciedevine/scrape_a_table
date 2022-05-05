@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from get_gecko_driver import GetGeckoDriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 get_driver = GetGeckoDriver()
 get_driver.install()
@@ -22,33 +24,25 @@ def site_login():
 
 
 # def navigate_to_table():
-#     print(f"{datetime.now()} Going to wait")
-#     element = driver.find_element(by=By.XPATH, value="//a[text()='FTP']")
-#     element = driver.find_element_by_xpath("//a[text()='FTP']")
-#     print(element)
-#     element.click()
-#     function getx(s) { return document.evaluate(s, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue}
+#     driver.implicitly_wait(10)
+#     data_sources = driver.find_element(by=By.ID, value="labelDataSources")
+#     driver.execute_script("arguments[0].click();", data_sources)
 
 
 def find_table():
-    driver.get(
-        "https://elkv-dev6.fa.us6.oraclecloud.com/analytics/saw.dll?bipublisherEntry"
-    )
     soup = BeautifulSoup(driver.page_source, "lxml")
     tables = soup.find_all("table")
     print(len(tables))
+    return tables
 
-    # def scrape_table():
-    #     dfs = pd.read_html(str(tables))
-    #     print(f"Total tables: {len(dfs)}")
-    #     print(dfs[0])
-    #     driver.close()
 
- 
+def scrape_table(tables):
+    dfs = pd.read_html(str(tables))
+    print(f"Total tables: {len(dfs)}")
+    print(dfs[0])
 
-    if __name__ == "__main__":
-        site_login()
-        # navigate_to_table()
-        find_table()
-        # scrape_table()
 
+site_login()
+# navigate_to_table()
+find_table()
+scrape_table(find_table())
