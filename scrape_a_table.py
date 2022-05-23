@@ -11,6 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 get_driver = GetGeckoDriver()
 get_driver.install()
 driver = webdriver.Firefox()
+wait = WebDriverWait(driver, 10)
 
 
 def site_login():
@@ -20,29 +21,37 @@ def site_login():
     driver.implicitly_wait(10)
     driver.find_element(by=By.CLASS_NAME, value="textInput").send_keys(username)
     driver.find_element(by=By.ID, value="password").send_keys(password)
-    driver.find_element(by=By.CSS_SELECTOR, value="#btnActive").click()
+    driver.find_element(by=By.ID, value="ssoBtn").click()
 
 
-# def navigate_to_table():
-#     driver.implicitly_wait(10)
-#     data_sources = driver.find_element(by=By.ID, value="labelDataSources")
-#     driver.execute_script("arguments[0].click();", data_sources)
+def mfa():
+    wait.until(EC.element_to_be_clickable((By.ID, "i0116"))).send_keys(username)
+    wait.until(EC.element_to_be_clickable((By.ID, "idSIButton9"))).click()
+    wait.until(EC.element_to_be_clickable((By.ID, "i0118"))).send_keys(password)
+    wait.until(EC.element_to_be_clickable((By.ID, "idSIButton9"))).click()
+    driver.execute_script("window.history.go(-1)")
 
 
-def find_table():
-    soup = BeautifulSoup(driver.page_source, "lxml")
-    tables = soup.find_all("table")
-    print(len(tables))
-    return tables
+def navigate_to_table():
+    super_wait = WebDriverWait(driver, 30)
+    super_wait.until(EC.element_to_be_clickable((By.ID, "labelDelivery"))).click()
 
 
-def scrape_table(tables):
-    dfs = pd.read_html(str(tables))
-    print(f"Total tables: {len(dfs)}")
-    print(dfs[0])
+# def find_table():
+#     soup = BeautifulSoup(driver.page_source, "lxml")
+#     tables = soup.find_all("table")
+#     print(len(tables))
+#     return tables
+
+
+# def scrape_table(tables):
+#     dfs = pd.read_html(str(tables))
+#     print(f"Total tables: {len(dfs)}")
+#     print(dfs[0])
 
 
 site_login()
-# navigate_to_table()
-find_table()
-scrape_table(find_table())
+mfa()
+navigate_to_table()
+# find_table()
+# scrape_table(find_table())
